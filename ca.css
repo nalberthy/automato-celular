@@ -1,0 +1,24 @@
+*{
+    margin: 0 auto;
+    padding: 0px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+body {
+    font-family: "Lato", sans-serif;
+}
+
+canvas{
+    display: block;
+    margin: 0 auto;
+    border: solid 1px #0101DF;
+    cursor: crosshair;
+}
+#caixa{
+    position: fixed;
+    bottom: 20px;
+    left: 15px;
+    border: solid 1px rgb(0, 0, 0);
+}
+

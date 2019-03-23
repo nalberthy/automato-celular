@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Automato Celular </title>
+    <link rel="stylesheet" href="ca.css">
+</head>
+<body>
+    <canvas id="canvas" onclick="MouseClick(event)"></canvas>
+    <div id="caixa">
+        <button onclick="Iniciar()" style="width: 100px; height: 50px">Iniciar</button>
+        <button onclick="Parar()" style="width: 100px; height: 50px">Parar</button>
+        <button onclick="Limpar()" style="width: 100px; height: 50px">Limpar</button>
+		<button onclick="proxGeracao()" style="width: 100px; height: 50px">Prox Geração</button>
+    </div>
+ 
+</body>
+<script>
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var celula = [];//um array de dois dígitos representando células
+    var tx = Math.floor(window.innerWidth/20);//Número de células
+    var ty = Math.floor(window.innerHeight/20);
+	
+	// Criando Número de pixels | celulas
+    var cx = canvas.width = tx * 20;
+    var cy = canvas.height = ty * 20;
+    
+	// Estado de função de chamada (Botão)
+	var estado = null;
+    var QtCelula = 0;
+    
+	for(var i = 0; i <= ty; i++){// percorrendo eixo y e criando uma lista
+        celula[i] = new Array();
+        for(var j = 0; j <= tx; j++){// percorrendo eixo x e criando uma lista
+            var vida = {
+                viva: false,
+                vivaNaProximaGeracao: false
+            };
+            celula[i][j] = vida; // Atribuindo vida a celula do tabuleiro
+        }
+    }
+	
+	
+    function Iniciar(){
+        estado = setInterval(function(){
+            Atualizar();
+            Desenhar();
+        },1500); // velocidade de atualização
+    }
+    function Parar(){
+        clearInterval(estado); // parar função interval
+    }
+    function Limpar(){ 
+		Parar()
+        ctx.clearRect(0,0,cx,cy);
+        for(var i = 0; i <= tx; i++){ // percorre até o final do eixo X
+            for(var j = 0; j<= ty; j++){// percorre até o final do eixo Y
+                celula[j][i].viva = false;// Atribui status de celula morta
+            }
+        }
+		
+    }
+    function MouseClick(e){ // Math.Floor retorna um numero inteiro
+        var ax = Math.floor(e.clientX/20);
+        var ay = Math.floor(e.clientY/20);
+        if(celula[ay][ax].viva === false){
+            celula[ay][ax].viva = true;
+            ctx.fillRect(ax*20,ay*20,16,16);
+        }else{
+            celula[ay][ax].viva = false;
+            ctx.clearRect(ax*20,ay*20,16,16);
+        }
+    }
+    function Desenhar(){
+        ctx.clearRect(0,0,cx,cy);
+        for(var i = 0; i < tx; i++){
+            for(var j = 0; j < ty; j++){
+                if(celula[j][i].viva === true){
+                    QtCelula++;
+                    ctx.fillRect(i*20,j*20,14,14);
+                }
+                celula[j][i].viva = celula[j][i].vivaNaProximaGeracao;
+                celula[j][i].vivaNaProximaGeracao = false;
+            }
+        }
+    }
+    function ProximaGeracao(y,x){
+        var count = 0;
+		// abaixo verifica- se a quantidade de vizinhos
+        if(celula[y-1][x-1].viva === true){count++;}
+        if(celula[y-1][x].viva === true){count++;}
+        if(celula[y-1][x+1].viva === true){count++;}
+        if(celula[y][x-1].viva === true){count++;}
+        if(celula[y][x+1].viva === true){count++;}
+        if(celula[y+1][x-1].viva === true){count++;}
+        if(celula[y+1][x].viva === true){count++;}
+        if(celula[y+1][x+1].viva === true){count++;}
+        if(celula[y][x].viva === true){
+            
+		// Define regra de visinhos
+			if(count == 1 || count == 2){
+                return true;
+            }
+        }
+        if(celula[y][x].viva === false)
+        {
+            if(count === 2){
+                return true;
+            }
+        }
+        return false;
+    }
+	function proxGeracao(){
+		Atualizar(),
+		Desenhar()
+	}
+    function Atualizar(){ // atualiza para proxima vida
+        for(var i = 1; i <= tx-1; i++){
+            for(var j = 1; j <= ty-1; j++){
+                celula[j][i].vivaNaProximaGeracao = ProximaGeracao(j,i);
+            }
+        }
+    }
+
+</script>
+</html>
